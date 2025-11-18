@@ -45,6 +45,7 @@ include_directories(include OpenCL ${OPENCL_HEADERS_KHRONOS})
 if(DEBUG)
     add_definitions(-DDEBUG)
     set(CMAKE_BUILD_TYPE Debug)
+    add_compile_options(-g -O0)
     if(DEBUG EQUAL 2)
         add_compile_options(-fsanitize=address -fno-omit-frame-pointer)
         add_link_options(-fsanitize=address)
@@ -64,7 +65,7 @@ elseif(UNIX AND NOT CYGWIN)
     set(BINARY_NAME "${PROJECT_NAME}")
     add_definitions(-D_POSIX -DLINUX -DHAVE_HWMON)
     if(NOT DEBUG)
-        add_link_options(-s)
+#        add_link_options(-s)
     endif()
     set(PLATFORM_LIBS pthread dl)
 elseif(CYGWIN)
@@ -125,3 +126,14 @@ if(UNIX AND NOT APPLE)
     install(DIRECTORY extra/tab_completion/
             DESTINATION ${DOCUMENT_FOLDER}/extra/tab_completion)
 endif()
+
+# Copy runtime resources into the build directory
+message(STATUS "Copying resources to build dir: OpenCL/, hashcat.hctune, hashcat.hcstat, nv_instaruc.txt")
+
+file(COPY ${CMAKE_SOURCE_DIR}/OpenCL DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY
+     ${CMAKE_SOURCE_DIR}/hashcat.hctune
+     ${CMAKE_SOURCE_DIR}/hashcat.hcstat
+     ${CMAKE_SOURCE_DIR}/nv_instruc.txt
+     DESTINATION ${CMAKE_BINARY_DIR}
+)
